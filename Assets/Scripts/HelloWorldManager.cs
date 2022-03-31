@@ -28,15 +28,7 @@ namespace HelloWorld
             if (GUILayout.Button("Client")) NetworkManager.Singleton.StartClient();
         }
 
-        static void SubmitNewPosition()
-        {
-            //Modificar script para hacer el cambio de posición dependiendo del botón pulsado
-            /*if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Move" : "Request Position Change"))
-            {
-                var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
-                var player = playerObject.GetComponent<HelloWorldPlayer>();
-                player.Move();
-            }*/
+        static void SubmitNewPosition(){
 
             if(GUILayout.Button("Esquerda")){
                 var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();

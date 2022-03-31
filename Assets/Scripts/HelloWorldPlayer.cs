@@ -14,6 +14,8 @@ namespace HelloWorld
 
         public static List<GameObject> rightTeam;
 
+        public int prevTeam;
+
         public Renderer ren;
 
         public override void OnNetworkSpawn()
@@ -26,27 +28,22 @@ namespace HelloWorld
 
         public void Move(int team = 0)
         {
-
-            if(leftTeam.Count >= 2){
-                team = 0;
+            if(leftTeam.Count >= 2 && team == 1){
+                team = prevTeam;
                 Debug.Log("El equipo azul está lleno, sowwy :(");
-            }
-
-            if(rightTeam.Count >= 2){
-                team = 0;
+            }else if(rightTeam.Count >= 2 && team == 2){
+                team = prevTeam;
                 Debug.Log("El equipo rojo está lleno, sowwy :(");
+            } else {
+                prevTeam = team;
+                SubmitPositionRequestServerRpc(team);
             }
-
-            SubmitPositionRequestServerRpc(team);
         }
 
         [ServerRpc]
         void SubmitPositionRequestServerRpc(int team = 0, ServerRpcParams rpcParams = default)
         {
             Position.Value = GetRandomPositionOnPlane(team);
-
-            // Usar esta forma en lugar de actualizar en el update cuando hayas metido los eventos
-            //transform.position = Position.Value;
             AsignTeamColor(team);
 
             if(team == 1){
@@ -78,7 +75,6 @@ namespace HelloWorld
         {
 
             if(team == 0){
-
                 return new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-3f, 3f));
             }else if(team == 1){
                 return new Vector3(Random.Range(-3f, -1f), 1f, Random.Range(-3f, 3f));
@@ -99,25 +95,15 @@ namespace HelloWorld
         }
 
         void Awake() {
-
             ren = GetComponent<Renderer>();
-
             leftTeam = new List<GameObject>();
-
             rightTeam = new List<GameObject>();
 
         }
 
         void Start(){
-
             Position.OnValueChanged += OnPositionChanged;
             color.OnValueChanged += OnColorChanged;
-        }
-
-        void Update()
-        {
-            //transform.position = Position.Value;
-            //ren.material.color = color.Value;
         }
     }
 }
