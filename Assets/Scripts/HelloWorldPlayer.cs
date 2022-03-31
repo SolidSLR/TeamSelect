@@ -10,6 +10,10 @@ namespace HelloWorld
 
         public NetworkVariable<Color> color;
 
+        public static List<GameObject> leftTeam;
+
+        public static List<GameObject> rightTeam;
+
         public Renderer ren;
 
         public override void OnNetworkSpawn()
@@ -23,6 +27,16 @@ namespace HelloWorld
         public void Move(int team = 0)
         {
 
+            if(leftTeam.Count == 2){
+                team = 0;
+                Debug.Log("El equipo azul está lleno, sowwy :(");
+            }
+
+            if(rightTeam.Count == 2){
+                team = 0;
+                Debug.Log("El equipo rojo está lleno, sowwy :(");
+            }
+
             SubmitPositionRequestServerRpc(team);
         }
 
@@ -34,6 +48,17 @@ namespace HelloWorld
             // Usar esta forma en lugar de actualizar en el update cuando hayas metido los eventos
             //transform.position = Position.Value;
             AsignTeamColor(team);
+
+            if(team == 1){
+                leftTeam.Add(gameObject);
+            }
+
+            if(team == 2){
+                rightTeam.Add(gameObject);
+            }
+
+            Debug.Log("Miembros de equipo azul: "+leftTeam.Count);
+            Debug.Log("Miembros de equipo rojo: "+rightTeam.Count);
         }
 
         void AsignTeamColor(int team = 0){
@@ -53,6 +78,7 @@ namespace HelloWorld
         {
 
             if(team == 0){
+
                 return new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-3f, 3f));
             }else if(team == 1){
                 return new Vector3(Random.Range(-3f, -1f), 1f, Random.Range(-3f, 3f));
@@ -64,6 +90,10 @@ namespace HelloWorld
         void Awake() {
 
             ren = GetComponent<Renderer>();
+
+            leftTeam = new List<GameObject>();
+
+            rightTeam = new List<GameObject>();
 
         }
 
