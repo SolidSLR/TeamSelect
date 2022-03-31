@@ -27,12 +27,12 @@ namespace HelloWorld
         public void Move(int team = 0)
         {
 
-            if(leftTeam.Count == 2){
+            if(leftTeam.Count >= 2){
                 team = 0;
                 Debug.Log("El equipo azul está lleno, sowwy :(");
             }
 
-            if(rightTeam.Count == 2){
+            if(rightTeam.Count >= 2){
                 team = 0;
                 Debug.Log("El equipo rojo está lleno, sowwy :(");
             }
@@ -87,6 +87,17 @@ namespace HelloWorld
             }
         }
 
+        void OnPositionChanged(Vector3 oldPos, Vector3 newPos){
+
+            transform.position = Position.Value;
+
+        }
+
+        void OnColorChanged(Color oldColor, Color newColor){
+
+            ren.material.color = color.Value;
+        }
+
         void Awake() {
 
             ren = GetComponent<Renderer>();
@@ -97,10 +108,16 @@ namespace HelloWorld
 
         }
 
+        void Start(){
+
+            Position.OnValueChanged += OnPositionChanged;
+            color.OnValueChanged += OnColorChanged;
+        }
+
         void Update()
         {
-            transform.position = Position.Value;
-            ren.material.color = color.Value;
+            //transform.position = Position.Value;
+            //ren.material.color = color.Value;
         }
     }
 }
