@@ -20,10 +20,10 @@ namespace HelloWorld
             }
         }
 
-        public void Move()
+        public void Move(int team = 0)
         {
 
-            SubmitPositionRequestServerRpc();
+            SubmitPositionRequestServerRpc(team);
         }
 
         [ServerRpc]
