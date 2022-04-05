@@ -10,11 +10,9 @@ namespace HelloWorld
 
         public NetworkVariable<Color> color;
 
-        public static List<GameObject> leftTeam;
+        public NetworkVariable<int> prevTeam;
 
-        public static List<GameObject> rightTeam;
-
-        public int prevTeam;
+        public static List<int> teams;
 
         public Renderer ren;
 
@@ -28,40 +26,29 @@ namespace HelloWorld
 
         public void Move(int team = 0)
         {
-            if(leftTeam.Count >= 2 && team == 1){
-                team = prevTeam;
-                Debug.Log("El equipo azul está lleno, sowwy :(");
-            }else if(rightTeam.Count >= 2 && team == 2){
-                team = prevTeam;
-                Debug.Log("El equipo rojo está lleno, sowwy :(");
-            } else {
-                prevTeam = team;
+            ;
                 SubmitPositionRequestServerRpc(team);
-            }
         }
 
         [ServerRpc]
         void SubmitPositionRequestServerRpc(int team = 0, ServerRpcParams rpcParams = default)
         {
-            Position.Value = GetRandomPositionOnPlane(team);
-            AsignTeamColor(team);
-
-            if(team == 1){
-                leftTeam.Add(gameObject);
+            if(teams[team]==2){
+                Debug.Log("Equipo lleno");
+            }else {
+                Position.Value = GetRandomPositionOnPlane(team);
+                AsignTeamColor(team);
+                prevTeam.Value = team;
+                teams[team]++;
+                Debug.Log("Jugadores en equipo: "+teams[team]);
             }
-
-            if(team == 2){
-                rightTeam.Add(gameObject);
-            }
-
-            Debug.Log("Miembros de equipo azul: "+leftTeam.Count);
-            Debug.Log("Miembros de equipo rojo: "+rightTeam.Count);
         }
 
         void AsignTeamColor(int team = 0){
 
             if(team == 0){
                 color.Value = Color.white;
+                
             }else if(team == 1){
                 color.Value = Color.blue;
             }else if(team == 2){
@@ -86,7 +73,6 @@ namespace HelloWorld
         void OnPositionChanged(Vector3 oldPos, Vector3 newPos){
 
             transform.position = Position.Value;
-
         }
 
         void OnColorChanged(Color oldColor, Color newColor){
@@ -95,13 +81,16 @@ namespace HelloWorld
         }
 
         void Awake() {
-            ren = GetComponent<Renderer>();
-            leftTeam = new List<GameObject>();
-            rightTeam = new List<GameObject>();
 
+            ren = GetComponent<Renderer>();
+            teams = new List<int>();
+            for(int i = 0; i<3; i++){
+                teams.Add(0);
+            }
         }
 
         void Start(){
+
             Position.OnValueChanged += OnPositionChanged;
             color.OnValueChanged += OnColorChanged;
         }
