@@ -15,29 +15,37 @@ namespace HelloWorld
         public static List<int> teams;
 
         public Renderer ren;
+        public bool firstTime = true;
 
         public override void OnNetworkSpawn()
         {
              if (IsOwner)
             {
                 Move();
+                
             }
+            firstTime = false;
         }
 
         public void Move(int team = 0)
         {
-            ;
-                SubmitPositionRequestServerRpc(team);
+            
+            SubmitPositionRequestServerRpc(team);
         }
 
         [ServerRpc]
         void SubmitPositionRequestServerRpc(int team = 0, ServerRpcParams rpcParams = default)
         {
-            if(teams[team]==2){
+            Debug.Log("Valor de firstTime: "+firstTime);
+            if(teams[team]==2 && team != 0){
                 Debug.Log("Equipo lleno");
             }else {
                 Position.Value = GetRandomPositionOnPlane(team);
                 AsignTeamColor(team);
+                if(teams[prevTeam.Value]>0 && !firstTime){
+
+                    teams[prevTeam.Value]--;
+                }
                 prevTeam.Value = team;
                 teams[team]++;
                 Debug.Log("Jugadores en equipo: "+teams[team]);
@@ -47,8 +55,7 @@ namespace HelloWorld
         void AsignTeamColor(int team = 0){
 
             if(team == 0){
-                color.Value = Color.white;
-                
+                color.Value = Color.white;    
             }else if(team == 1){
                 color.Value = Color.blue;
             }else if(team == 2){
